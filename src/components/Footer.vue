@@ -1,6 +1,6 @@
 <template>
   <!-- Footer -->
-  <mdb-footer color="indigo" class="font-small pt-0">
+  <mdb-footer color="stylish-color-dark" class="font-small pt-0">
     <mdb-container>
       <mdb-row>
         <mdb-col md="12">
