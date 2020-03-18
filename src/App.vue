@@ -2,7 +2,7 @@
   <div id="app">
     <div>
       <b-navbar id="nav" toggleable="lg" type="dark" variant="dark">
-        <b-navbar-brand id="nav-title" href="#">Gemstones 💎</b-navbar-brand>
+        <b-navbar-brand id="nav-title" href="/">Gemstones 💎</b-navbar-brand>
 
         <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
 
@@ -14,21 +14,13 @@
             <b-nav-item class="px-3">
               <router-link to="/about">About</router-link>
             </b-nav-item>
-            <b-nav-item>
-              <router-link to="/admin">Admin</router-link>
-            </b-nav-item>
           </b-navbar-nav>
 
           <!-- Right aligned nav items -->
           <b-navbar-nav class="ml-auto">
-            <b-nav-item-dropdown right>
-              <!-- Using 'button-content' slot -->
-              <template v-slot:button-content>
-                <em>User</em>
-              </template>
-              <b-dropdown-item href="#">Sign in</b-dropdown-item>
-              <b-dropdown-item href="#">Sign Out</b-dropdown-item>
-            </b-nav-item-dropdown>
+            <b-nav-item>
+              <router-link to="/admin">Admin</router-link>
+            </b-nav-item>
           </b-navbar-nav>
         </b-collapse>
       </b-navbar>
@@ -49,7 +41,7 @@ export default {
 </script>
 
 <style>
-@import url('https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap');
+@import url("https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap");
 
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
@@ -77,5 +69,17 @@ export default {
 
 #nav a.router-link-exact-active {
   color: #ffffff;
+}
+
+.badge,
+.btn,
+.btn:hover,
+.jumbotron {
+  -webkit-box-shadow: 0 0 0 0;
+  box-shadow: 0 0 0 0;
+}
+
+.btn {
+  font-size: 0.8rem !important;
 }
 </style>

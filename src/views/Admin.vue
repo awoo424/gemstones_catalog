@@ -2,7 +2,7 @@
   <b-col class="admin">
     <b-card-group deck>
       <!-- Add card -->
-      <b-card title="Add a gemstone">
+      <b-card id="add-title" title="Add a gemstone">
         <b-card-text id="add-card">
           <!-- Name -->
           <b-form-group
@@ -15,7 +15,7 @@
           >
             <b-form-input
               id="input-name"
-              v-model="name"
+              v-model="gemstone.name"
               :state="nameState"
               aria-describedby="name-feedback"
             ></b-form-input>
@@ -33,7 +33,7 @@
           >
             <b-form-input
               id="input-sciname"
-              v-model="sciname"
+              v-model="gemstone.sciname"
               :state="scinameState"
               aria-describedby="sciname-feedback"
             ></b-form-input>
@@ -47,7 +47,7 @@
             </b-col>
             <b-col md="12" lg="9">
               <b-form-textarea
-                v-model="description"
+                v-model="gemstone.description"
                 id="textarea-small"
                 size="sm"
                 placeholder="Add description"
@@ -59,7 +59,7 @@
 
           <!-- Image file -->
           <b-form-file
-            v-model="imagefile"
+            v-model="gemstone.imagefile"
             placeholder="Choose a file or drop it here"
             drop-placeholder="Drop file here..."
             type="file"
@@ -68,6 +68,10 @@
           ></b-form-file>
           <div class="py-3"></div>
 
+          <!-- Place of origin -->
+          <CountryInput @country-list="selectedCountries"></CountryInput>
+
+          <div class="py-3"></div>
           <!-- Symbolism -->
           <b-form-group
             id="gemstone-symbolism"
@@ -79,7 +83,7 @@
             <b-form-tags
               input-id="tags-remove-on-delete"
               :input-attrs="{ 'aria-describedby': 'tags-remove-on-delete-help' }"
-              v-model="symbolism"
+              v-model="gemstone.symbolism"
               tag-variant="light"
               separator=" "
               placeholder="Enter tags separated by space"
@@ -96,7 +100,7 @@
         </b-card-text>
         <template v-slot:footer class="card-footer">
           <b-button variant="danger">Clear</b-button>
-          <span class="px-2"></span>
+          <span class="px-1"></span>
           <b-button variant="success">Confirm</b-button>
         </template>
       </b-card>
@@ -107,30 +111,47 @@
           <h6 class="mb-0">Preview</h6>
         </template>
         <b-card-text>
-          <div v-if="imagefile.length">
-            <b-img class="my-0 mx-0 px-0" :src="imagefile" fluid-grow alt="Fluid-grow image"></b-img>
+          <div v-if="gemstone.imagefile.length">
+            <b-img
+              class="my-0 mx-0 px-0"
+              :src="gemstone.imagefile"
+              fluid-grow
+              alt="Fluid-grow image"
+            ></b-img>
           </div>
           <div class="preview-content">
             <div class="preview-name">
-              <h3>{{ name }}</h3>
+              <h3>{{ gemstone.name }}</h3>
             </div>
-            <div v-if="sciname.length">
+            <div v-if="gemstone.sciname.length">
               <p>
                 <strong>Scientific name:</strong>
-                {{ sciname }}
+                {{ gemstone.sciname }}
               </p>
             </div>
-            <div v-if="description.length">
+            <div v-if="gemstone.description.length">
               <p>
                 <strong>Description:</strong>
-                {{ description }}
+                {{ gemstone.description }}
               </p>
             </div>
-            <div v-if="symbolism.length">
-              <p>
+            <div v-if="gemstone.countries.length">
+              <span class="pr-2">
+                <strong>Place of origin:</strong>
+              </span>
+              <ul>
+                <li v-for="country in gemstone.countries" v-bind:key="country.id">{{ country.name }}</li>
+              </ul>
+            </div>
+            <div v-if="gemstone.symbolism.length">
+              <span class="pr-2">
                 <strong>Symbolism:</strong>
-                {{ symbolism }}
-              </p>
+              </span>
+              <b-badge
+                v-for="sym in gemstone.symbolism"
+                v-bind:key="sym.id"
+                class="preview-tags"
+              >{{ sym }}</b-badge>
             </div>
           </div>
         </b-card-text>
@@ -140,7 +161,13 @@
 </template>
 
 <script>
+import CountryInput from "@/components/CountryInput.vue";
+
 export default {
+  name: "Admin",
+  components: {
+    CountryInput
+  },
   methods: {
     previewImage: function(event) {
       // Reference to the DOM input element
@@ -153,28 +180,37 @@ export default {
         reader.onload = e => {
           // Note: arrow function used here, so that "this.imageData" refers to the imageData of Vue component
           // Read image as base64 and set to imageData
-          this.imagefile = e.target.result;
+          this.gemstone.imagefile = e.target.result;
         };
         // Start the reader job - read file as a data url (base64 format)
         reader.readAsDataURL(input.files[0]);
       }
+    },
+    // Gets the checkbox information from the child component
+    selectedCountries: function(params) {
+      this.gemstone.countries = params;
+      console.log("Hello");
+      console.log(params);
     }
   },
   computed: {
     nameState() {
-      return this.name.length > 2 ? true : false;
+      return this.gemstone.name.length > 2 ? true : false;
     },
     scinameState() {
-      return this.sciname.length > 0 ? true : false;
+      return this.gemstone.sciname.length > 0 ? true : false;
     }
   },
   data() {
     return {
-      name: "",
-      sciname: "",
-      description: "",
-      imagefile: "",
-      symbolism: ["love", "peace"]
+      gemstone: {
+        name: "",
+        sciname: "",
+        description: "",
+        imagefile: "",
+        countries: [],
+        symbolism: ["love", "peace"]
+      }
     };
   }
 };
@@ -187,6 +223,10 @@ export default {
 
 #add-card * {
   text-align: left;
+}
+
+#add-title h4 {
+  font-weight: 500;
 }
 
 #preview-card {
@@ -203,6 +243,20 @@ export default {
 
 #preview-card strong {
   font-weight: 500;
+}
+
+.preview-tags {
+  padding: 0.4rem;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+  margin-right: 0.4rem;
+  font-size: 0.8rem;
+  text-transform: capitalize;
+}
+
+.badge-secondary {
+  background-color: pink !important;
+  color: #343a40 !important;
 }
 
 .admin {
