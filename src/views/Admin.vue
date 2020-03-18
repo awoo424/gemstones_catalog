@@ -62,7 +62,6 @@
             v-model="gemstone.imagefile"
             placeholder="Choose a file or drop it here"
             drop-placeholder="Drop file here..."
-            type="file"
             @change="previewImage"
             accept="image/*"
           ></b-form-file>
@@ -101,7 +100,7 @@
         <template v-slot:footer class="card-footer">
           <b-button variant="danger">Clear</b-button>
           <span class="px-1"></span>
-          <b-button variant="success">Confirm</b-button>
+          <b-button v-on:click.prevent="submit" variant="success">Confirm</b-button>
         </template>
       </b-card>
 
@@ -157,11 +156,16 @@
         </b-card-text>
       </b-card>
     </b-card-group>
+
+    <!-- Submission snackbar -->
+    <snackbar baseSize="7rem" ref="snackbar" :holdTime="5000" position="bottom-right" />
   </b-col>
 </template>
 
 <script>
 import CountryInput from "@/components/CountryInput.vue";
+
+const axios = require("axios");
 
 export default {
   name: "Admin",
@@ -191,6 +195,25 @@ export default {
       this.gemstone.countries = params;
       console.log("Hello");
       console.log(params);
+    },
+    submit: function() {
+      if (!this.name || !this.sciname) {
+        this.$refs.snackbar.error("Form incomplete");
+      } else {
+        axios
+          .post(
+            "https://gemstones-catalog.firebaseio.com/gemstones.json",
+            this.gemstone
+          )
+          .then(response => {
+            console.log(response);
+            this.$refs.snackbar.info("Submission successful");
+          })
+          .catch(error => {
+            console.log(error);
+            this.$refs.snackbar.error("Submission failed");
+          });
+      }
     }
   },
   computed: {
@@ -207,10 +230,11 @@ export default {
         name: "",
         sciname: "",
         description: "",
-        imagefile: "",
+        imagefile: [],
         countries: [],
         symbolism: ["love", "peace"]
-      }
+      },
+      submitted: false
     };
   }
 };
@@ -296,5 +320,10 @@ kbd {
   width: 100%;
   height: 250px;
   object-fit: cover;
+}
+
+.snack-bar {
+  border-radius: 0.2rem;
+  box-shadow: 4px -1px 10px 0px rgba(219, 212, 219, 0.65);
 }
 </style>
